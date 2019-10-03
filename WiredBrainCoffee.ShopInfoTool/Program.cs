@@ -22,48 +22,15 @@ namespace WiredBrainCoffee.ShopInfoTool
                 {
                     break;
                 }
-
-
                 var coffeeShops = coffeeShopDataProvider.LoadCoffeeShops();
 
-                if(string.Equals("help", line, StringComparison.OrdinalIgnoreCase))
-                {
-                    Console.WriteLine("> Available shop commands:");
-                    foreach(var coffeeShop in coffeeShops)
-                    {
-                        Console.WriteLine($"> {coffeeShop.Location}");
-                    }
-                }
-                else
-                {
-                    var foundCoffeeShops = coffeeShops
-                        .Where(x => x.Location.StartsWith(line, StringComparison.InvariantCultureIgnoreCase))
-                        .ToList();
+                var commandHandler =
+                string.Equals("help", line, StringComparison.OrdinalIgnoreCase)
+                ? new HelpCommandHandler(coffeeShops, line) as ICommandHandler
+                : new CoffeeShopCommandHandler(coffeeShops, line);
 
-                    if(foundCoffeeShops.Count == 0)
-                    {
-                        Console.WriteLine($"> Command '{line}' not found");
-                    }
-                    else if(foundCoffeeShops.Count ==1)
-                    {
-                        var coffeeShop = foundCoffeeShops.Single();
-                        Console.WriteLine($"> Location: {coffeeShop.Location}");
-                        Console.WriteLine($"> Beans in stock: {coffeeShop.BeansInStocInKg} kg");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"> Multiple matching coffee shop commands found:");
-                        foreach(var coffeeType in foundCoffeeShops)
-                        {
-                            Console.WriteLine($"> {coffeeType.Location}");
-                            //ok
-                        }
-                    }
-                }
-
+                commandHandler.HandleCommand();
             }
-
-
         }
     }
 }
