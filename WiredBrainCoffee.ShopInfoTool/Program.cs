@@ -56,6 +56,7 @@ namespace WiredBrainCoffee.ShopInfoTool
                         foreach(var coffeeType in foundCoffeeShops)
                         {
                             Console.WriteLine($"> {coffeeType.Location}");
+                            //ok
                         }
                     }
                 }
