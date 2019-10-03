@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using WiredBrainCoffee.DataAccess;
 
 namespace WiredBrainCoffee.ShopInfoTool
@@ -9,13 +10,19 @@ namespace WiredBrainCoffee.ShopInfoTool
         {
             Console.WriteLine("Wired Brain Coffee - Shop Info Tool!");
 
-            Console.WriteLine("Write 'help' to list available coffee shop commands");
+            Console.WriteLine("Write 'help' to list available coffee shop commands, write 'quit' to exit application");
 
             var coffeeShopDataProvider = new CoffeeShopDataProvider();
 
             while(true)
             {
                 var line = Console.ReadLine();
+
+                if (string.Equals("quit", line, StringComparison.OrdinalIgnoreCase))
+                {
+                    break;
+                }
+
 
                 var coffeeShops = coffeeShopDataProvider.LoadCoffeeShops();
 
@@ -27,6 +34,32 @@ namespace WiredBrainCoffee.ShopInfoTool
                         Console.WriteLine($"> {coffeeShop.Location}");
                     }
                 }
+                else
+                {
+                    var foundCoffeeShops = coffeeShops
+                        .Where(x => x.Location.StartsWith(line, StringComparison.InvariantCultureIgnoreCase))
+                        .ToList();
+
+                    if(foundCoffeeShops.Count == 0)
+                    {
+                        Console.WriteLine($"> Command '{line}' not found");
+                    }
+                    else if(foundCoffeeShops.Count ==1)
+                    {
+                        var coffeeShop = foundCoffeeShops.Single();
+                        Console.WriteLine($"> Location: {coffeeShop.Location}");
+                        Console.WriteLine($"> Beans in stock: {coffeeShop.BeansInStocInKg} kg");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"> Multiple matching coffee shop commands found:");
+                        foreach(var coffeeType in foundCoffeeShops)
+                        {
+                            Console.WriteLine($"> {coffeeType.Location}");
+                        }
+                    }
+                }
+
             }
 
 
